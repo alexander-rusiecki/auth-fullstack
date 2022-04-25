@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const signinSchema = require('../../schemas/signinSchema');
 const User = require('../../models/userModel');
 
@@ -8,10 +9,22 @@ const useSignup = async (req, res, next) => {
       const user = await User.findOne({
         username: req.body.username,
       });
-      res.json({ user });
+      if (user) {
+        const error = new Error('Username already exists');
+        next(error);
+      } else {
+        bcrypt.hash(req.body.password, 12, async (err, hashedPassword) => {
+          const hashedUser = {
+            username: req.body.username,
+            password: hashedPassword,
+          };
+          const newUser = await User.create(hashedUser);
+          res.json(newUser);
+        });
+      }
     }
   } catch (err) {
-    next(err.errors);
+    next(err);
   }
 };
 

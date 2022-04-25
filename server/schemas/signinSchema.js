@@ -14,6 +14,7 @@ const signinSchema = yup.object().shape({
     .string()
     .min(10, 'Password is too short - should be 10 chars minimum.')
     .max(20, 'Password is too long - should be 20 chars maximum.')
+    .trim()
     .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.')
     .required('Please provide your password'),
 });
