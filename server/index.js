@@ -1,8 +1,10 @@
 const express = require('express');
+const dotenv = require('dotenv').config();
 const volleyball = require('volleyball');
 const cors = require('cors');
 const auth = require('./auth/routes/index');
-
+const connectDB = require('./db/connection');
+connectDB();
 const app = express();
 
 app.use(express.json());
@@ -27,13 +29,12 @@ function notFound(req, res, next) {
 function errorHandler(err, req, res, next) {
   res.status(res.statusCode || 500);
   res.json({
-    message: err.message,
-    stack: err.stack,
+    message: err,
   });
 }
 
 app.use(notFound);
 app.use(errorHandler);
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log('Listening on port', port));

@@ -1,26 +1,18 @@
-const yup = require('yup');
+const signinSchema = require('../../schemas/signinSchema');
+const User = require('../../models/userModel');
 
-const signinSchema = yup.object().shape({
-  username: yup
-    .string()
-    .min(5, 'Username is too short - should be 5 chars minimum.')
-    .max(20, 'Username is too long - should be 20 chars maximum.')
-    .matches(
-      /(^[a-zA-Z0-9_]+$)/,
-      'Password can only contain latin letters, numbers and underscores.'
-    )
-    .required('Please provide your username'),
-  password: yup
-    .string()
-    .min(10, 'Password is too short - should be 10 chars minimum.')
-    .max(20, 'Password is too long - should be 20 chars maximum.')
-    .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.')
-    .required('Please provide your password'),
-});
-
-async function useSignup(req, res) {
-  const result = await signinSchema.isValid(req.body);
-  res.json(result);
+async function useSignup(req, res, next) {
+  try {
+    const result = await signinSchema.validate(req.body);
+    if (result) {
+      const user = await User.findOne({
+        username: req.body.username,
+      });
+      res.json({ user });
+    }
+  } catch (err) {
+    next(err.errors);
+  }
 }
 
 module.exports = useSignup;
