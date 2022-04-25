@@ -1,9 +1,12 @@
 const express = require('express');
 const volleyball = require('volleyball');
 const cors = require('cors');
+const auth = require('./auth/routes/index');
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(volleyball);
 app.use(cors());
 
@@ -12,6 +15,8 @@ app.get('/', (req, res) => {
     message: 'YOoo..',
   });
 });
+
+app.use('/auth', auth);
 
 function notFound(req, res, next) {
   res.status(404);
