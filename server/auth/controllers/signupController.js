@@ -13,14 +13,21 @@ const useSignup = async (req, res, next) => {
         const error = new Error('Username already exists');
         next(error);
       } else {
-        bcrypt.hash(req.body.password, 12, async (err, hashedPassword) => {
-          const hashedUser = {
-            username: req.body.username,
-            password: hashedPassword,
-          };
-          const newUser = await User.create(hashedUser);
-          res.json(newUser);
-        });
+        bcrypt.hash(
+          req.body.password.trim(),
+          12,
+          async (err, hashedPassword) => {
+            const hashedUser = {
+              username: req.body.username,
+              password: hashedPassword,
+            };
+            const newUser = await User.create(hashedUser);
+            res.json({
+              _id: newUser._id,
+              username: newUser.username,
+            });
+          }
+        );
       }
     }
   } catch (err) {
