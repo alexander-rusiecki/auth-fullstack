@@ -1,10 +1,10 @@
 const signinSchema = require('../../schemas/signinSchema');
 const User = require('../../models/userModel');
 
-async function useSignup(req, res, next) {
+const useSignup = async (req, res, next) => {
   try {
-    const result = await signinSchema.validate(req.body);
-    if (result) {
+    const validUsername = await signinSchema.validate(req.body);
+    if (validUsername) {
       const user = await User.findOne({
         username: req.body.username,
       });
@@ -13,6 +13,6 @@ async function useSignup(req, res, next) {
   } catch (err) {
     next(err.errors);
   }
-}
+};
 
 module.exports = useSignup;
