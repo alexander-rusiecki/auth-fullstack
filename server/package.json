@@ -15,7 +15,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "volleyball": "^1.5.1"
+    "volleyball": "^1.5.1",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
