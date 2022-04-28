@@ -4,8 +4,8 @@ const User = require('../../models/userModel');
 
 const useSignup = async (req, res, next) => {
   try {
-    const validUsername = await signinSchema.validate(req.body);
-    if (validUsername) {
+    const validUser = await signinSchema.validate(req.body);
+    if (validUser) {
       const user = await User.findOne({
         username: req.body.username,
       });
