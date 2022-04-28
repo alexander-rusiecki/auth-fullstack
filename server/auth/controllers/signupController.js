@@ -11,6 +11,7 @@ const useSignup = async (req, res, next) => {
       });
       if (user) {
         const error = new Error('Username already exists');
+        res.status(409);
         next(error);
       } else {
         bcrypt.hash(
@@ -31,6 +32,7 @@ const useSignup = async (req, res, next) => {
       }
     }
   } catch (err) {
+    res.status(422);
     next(err);
   }
 };
