@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import signinSchema from '../schemas/signinSchema';
 
 const Signup = () => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -7,25 +8,31 @@ const Signup = () => {
     password: '',
     confirmPassword: '',
   });
+  const formRef = useRef();
 
-  const validUser = () => {
-    if (newUser.password === newUser.confirmPassword) {
-      setErrorMessage('');
-      return true;
-    } else {
-      setErrorMessage('Passwords must match');
-      return false;
-    }
-  };
   const handleChange = evt => {
     const name = evt.target.name;
     setNewUser({ ...newUser, [name]: evt.target.value });
   };
-  const handleSubmit = evt => {
+  const handleSubmit = async evt => {
     evt.preventDefault();
-    if (validUser()) {
-      console.log(newUser);
+    if (newUser.password !== newUser.confirmPassword) {
+      setErrorMessage('Passwords must match');
+      return;
     }
+    await signinSchema
+      .validate(newUser, { abortEarly: false })
+      .then(newUser => {
+        setErrorMessage('');
+        console.log(newUser);
+        formRef.current.reset();
+      })
+      .catch(err => {
+        if (err) {
+          setErrorMessage(err.inner[0].errors);
+          return;
+        }
+      });
   };
   return (
     <>
@@ -35,7 +42,7 @@ const Signup = () => {
           {errorMessage}
         </div>
       )}
-      <form className="w-25 mt-5 mx-auto" onSubmit={handleSubmit}>
+      <form className="w-25 mt-5 mx-auto" onSubmit={handleSubmit} ref={formRef}>
         <fieldset>
           <div className="form-group mt-5">
             <label htmlFor="username" className="form-label mt-4">
@@ -47,7 +54,7 @@ const Signup = () => {
               className="form-control"
               id="username"
               aria-describedby="usernamelHelp"
-              placeholder="Enter username"
+              placeholder="enter username"
               required
               onChange={handleChange}
             />
@@ -62,7 +69,7 @@ const Signup = () => {
               className="form-control"
               id="password"
               aria-describedby="passwordlHelp"
-              placeholder="Enter password"
+              placeholder="enter password"
               required
               onChange={handleChange}
             />
@@ -77,7 +84,7 @@ const Signup = () => {
               className="form-control"
               id="confirmPassword"
               aria-describedby="confirmPasswordlHelp"
-              placeholder="Confirm password"
+              placeholder="confirm password"
               required
               onChange={handleChange}
             />
