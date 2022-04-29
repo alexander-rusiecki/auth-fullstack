@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const volleyball = require('volleyball');
 const cors = require('cors');
 const auth = require('./auth/routes/index');
@@ -7,8 +8,16 @@ const connectDB = require('./db/connection');
 connectDB();
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(limiter);
 app.use(volleyball);
 app.use(cors());
 
