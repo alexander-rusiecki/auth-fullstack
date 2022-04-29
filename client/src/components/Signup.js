@@ -5,6 +5,7 @@ import signinSchema from '../schemas/signinSchema';
 import spinner from '../spinner.svg';
 
 const Signup = () => {
+  const SIGNUP_URL = 'http://localhost:4000/auth/signup';
   const [errorMessage, setErrorMessage] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [newUser, setNewUser] = useState({
@@ -27,35 +28,32 @@ const Signup = () => {
     }
     await signinSchema
       .validate(newUser, { abortEarly: false })
-      .then(userInput => {
+      .then(() => {
         setErrorMessage('');
         const registeredUser = {
-          username: userInput.username,
-          password: userInput.password,
+          username: newUser.username,
+          password: newUser.password,
         };
         setIsSigningUp(true);
-        fetch('http://localhost:4000/auth/signup', {
+        fetch(SIGNUP_URL, {
           method: 'POST',
-          body: JSON.stringify(registeredUser),
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify(registeredUser),
         })
           .then(response => {
             if (response.ok) {
-              navigate('/login');
-
+              navigate('/dashboard');
               return response.json();
             }
-            return response
-              .json()
-              .then(error => {
-                throw new Error(error.message);
-              })
-              .then(user => {
-                setIsSigningUp(false);
-                navigate('/login');
-              });
+            return response.json().then(error => {
+              throw new Error(error.message);
+            });
+          })
+          .then(() => {
+            setIsSigningUp(false);
+            navigate('/dashboard');
           })
           .catch(err => {
             setIsSigningUp(false);
@@ -70,9 +68,10 @@ const Signup = () => {
         }
       });
   };
+
   return (
     <>
-      <h2 className="text-center mt-5">Sign up</h2>
+      <h2 className="text-center mt-5">Signup</h2>
       {isSigningUp && (
         <div className="text-center">
           <img src={spinner} alt="loading spinner" />
@@ -104,6 +103,9 @@ const Signup = () => {
                 required
                 onChange={handleChange}
               />
+              <small className="text-white">
+                Only latin letters, numbers or underscores
+              </small>
             </div>
             <div className="form-group">
               <label htmlFor="password" className="form-label mt-4">
@@ -119,6 +121,7 @@ const Signup = () => {
                 required
                 onChange={handleChange}
               />
+              <small className="text-white">Only latin letters</small>
             </div>
             <div className="form-group">
               <label htmlFor="confirmPassword" className="form-label mt-4">
@@ -134,9 +137,10 @@ const Signup = () => {
                 required
                 onChange={handleChange}
               />
+              <small className="text-white">Passwords must match</small>
             </div>
             <button type="submit" className="btn btn-primary mt-5">
-              Submit
+              Signup
             </button>
           </fieldset>
         </form>

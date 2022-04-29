@@ -6,9 +6,10 @@ const User = require('../../models/userModel');
 const useLogin = async (req, res, next) => {
   const respondError422 = (res, next) => {
     res.status(422);
-    err = new Error('Unable to login');
-    next(err);
+    const error = new Error('Unable to login');
+    next(error);
   };
+
   try {
     const validUser = await signinSchema.validate(req.body);
     if (validUser) {
